@@ -802,7 +802,7 @@
 									<name>Filename</name>
 									<value object_id="_51">
 										<which>2</which>
-										<value>/Users/jess/software/UQExampleBEMHeartPosition/data/geom/Full_tank_771.mat</value>
+										<value>%SCIRUNDATADIR%/data/geom/Full_tank_771.mat</value>
 									</value>
 								</second>
 							</item>
@@ -878,7 +878,7 @@
 									<name>Filename</name>
 									<value object_id="_56">
 										<which>2</which>
-										<value>/Users/jess/software/UQExampleBEMHeartPosition/data/geom/capped_sock.mat</value>
+										<value>%SCIRUNDATADIR%/data/geom/capped_sock.mat</value>
 									</value>
 								</second>
 							</item>
@@ -954,7 +954,7 @@
 									<name>Filename</name>
 									<value object_id="_61">
 										<which>2</which>
-										<value>/Users/jess/software/UQExampleBEMHeartPosition/data/potentials/Run0001-cappedsock.mat</value>
+										<value>%SCIRUNDATADIR%/data/potentials/Run0001-cappedsock.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1030,7 +1030,7 @@
 									<name>Filename</name>
 									<value object_id="_66">
 										<which>2</which>
-										<value>/Users/jess/software/UQExampleBEMHeartPosition/UQ_data/UQ_torso_samples.mat</value>
+										<value>%SCIRUNDATADIR%/UQ_data/UQ_torso_samples.mat</value>
 									</value>
 								</second>
 							</item>
@@ -3602,7 +3602,7 @@
 									<name>Filename</name>
 									<value object_id="_285">
 										<which>2</which>
-										<value>/Users/jess/software/UQExampleBEMHeartPosition/tmp/UQ_torso_SR_solutions.txt</value>
+										<value>%SCIRUNDATADIR%/tmp/UQ_torso_SR_solutions.txt</value>
 									</value>
 								</second>
 							</item>

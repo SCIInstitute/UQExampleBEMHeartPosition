@@ -10,7 +10,7 @@ from UncertainSCI.indexing import TotalDegreeSet
 from UncertainSCI.pce import PolynomialChaosExpansion
 
 #place for UQ files
-output_dir = "/Users/jess/CIBC/FP/UQ/torso_UQ/"
+output_dir = "/Users/jess/software/UQExampleBEMHeartPosition/"
 
 # Number of parameters
 dimension = 4
@@ -40,8 +40,8 @@ def run_scirun_model_bash(samples,N):
 
     scirun_call = "/Users/jess/software/SCIRun/bin_clean/SCIRun/SCIRun_test"
 #    scirun_call = "/Applications/SCIRun.app/Contents/MacOS/SCIRun"
-    network_file = "/Users/jess/CIBC/FP/UQ/nets/torso_position_model_all.srn5"
-    tmp_dir = "/Users/jess/CIBC/FP/UQ/tmp/"
+    network_file = output_dir+"nets/torso_position_model_all.srn5"
+    tmp_dir = output_dir+"tmp/"
     
 
 def run_scirun_model(samples,N):
@@ -49,16 +49,16 @@ def run_scirun_model(samples,N):
     # convert samples into transformation matrices, save to disk, load in SCIRun, run model, save solutions to disk, load back to script.
     scirun_call = "/Users/jess/software/SCIRun/bin_clean/SCIRun/SCIRun_test"
 #    scirun_call = "/Applications/SCIRun.app/Contents/MacOS/SCIRun"
-    network_file = "/Users/jess/CIBC/FP/UQ/nets/torso_position_model_all.srn5"
-    tmp_dir = "/Users/jess/CIBC/FP/UQ/tmp/"
+    network_file = output_dir+"nets/torso_position_model_all.srn5"
+    tmp_dir = output_dir+"UQ/tmp/"
     
     
 
     # experiment files.  It is here for now to make some things easier
-    vect_file = "/Users/jess/CIBC/PD/Tank_Experiment/experiments/Tank_10_27_2014/geom/s_vect.mat"
-    heart_pots = "/Users/jess/CIBC/PD/Tank_Experiment/experiments/Tank_10_27_2014/processed_ecg/mat_files/beat1/Run0001-cs.mat"
-    heart_geom = "/Users/jess/CIBC/PD/Tank_Experiment/experiments/Tank_10_27_2014/geom/capped_sock.mat"
-    torso_geom = "/Users/jess/CIBC/PD/Tank_Experiment/geoms_original/Full_tank_771.mat"
+    vect_file = output_dir+"data/geom/s_vect.mat"
+    heart_pots = output_dir+"Run0001-cappedsock.mat"
+    heart_geom = output_dir+"data/geom/capped_sock.mat"
+    torso_geom = output_dir+"data/geom/Full_tank_771.mat"
     
     
     script_file_tmp = os.path.join(tmp_dir, "UQ_torso_tmp.py")
@@ -181,7 +181,7 @@ mo_shape = model_output.shape
 pots = model_output(reshape,(mo_shape[0],771,383))
 
 
-UQ_file = os.path.join(output_dir, "torso_position_UQ_values.mat")
+UQ_file = os.path.join(output_dir+"UQ_data", "torso_position_UQ_values.mat")
 
 scipy.io.savemat(UQ_file, dict(mean = mean.T, stdev = stdev.T, tot_sensitivity = total_sensitivity.T, glob_sensitivity = global_sensitivity.T, quantiles = quantiles.T, median = median.T))
     
