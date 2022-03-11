@@ -11,6 +11,7 @@ from UncertainSCI.pce import PolynomialChaosExpansion
 
 #place for UQ files
 output_dir = "/Users/jess/software/UQExampleBEMHeartPosition/"
+scirun_call = "/Users/jess/software/SCIRun/bin_clean/SCIRun/SCIRun_test"
 
 # Number of parameters
 dimension = 4
@@ -36,9 +37,12 @@ print(pce.samples)
 N = 16191
 
 #scirun_call = "/Users/jess/software/SCIRun/bin_headless/SCIRun/SCIRun_test"
-scirun_call = "/Users/jess/software/SCIRun/bin_clean/SCIRun/SCIRun_test"
+
 #    scirun_call = "/Applications/SCIRun.app/Contents/MacOS/SCIRun"
 tmp_dir = output_dir+"tmp/"
+
+if not os.path.exists(tmp_dir):
+    os.makedirs(tmp_dir)
 
 def run_scirun_model_bash(samples,N):
 
@@ -184,6 +188,8 @@ quantiles = quantiles.reshape((quantiles.shape[0],num_leads,num_time_steps))
 mo_shape = model_output.shape
 pots = model_output.reshape((mo_shape[0],num_leads,num_time_steps))
 
+if not os.path.exists(output_dir+"UQ_data"):
+    os.makedirs(output_dir+"UQ_data")
 
 UQ_file = os.path.join(output_dir+"UQ_data", "torso_position_UQ_values.mat")
 
