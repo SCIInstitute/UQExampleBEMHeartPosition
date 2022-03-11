@@ -29,34 +29,32 @@ pce = PolynomialChaosExpansion(indices, dist)
 pce.generate_samples()
 
 #samples = pce.samples
-#print(samples)
+print(pce.samples)
 
 
 # solution points (771 nodes x 21 time points)
 N = 16191
 
+#scirun_call = "/Users/jess/software/SCIRun/bin_headless/SCIRun/SCIRun_test"
+scirun_call = "/Users/jess/software/SCIRun/bin_clean/SCIRun/SCIRun_test"
+#    scirun_call = "/Applications/SCIRun.app/Contents/MacOS/SCIRun"
+tmp_dir = output_dir+"tmp/"
 
 def run_scirun_model_bash(samples,N):
 
-    scirun_call = "/Users/jess/software/SCIRun/bin_clean/SCIRun/SCIRun_test"
-#    scirun_call = "/Applications/SCIRun.app/Contents/MacOS/SCIRun"
     network_file = output_dir+"nets/torso_position_model_all.srn5"
-    tmp_dir = output_dir+"tmp/"
     
 
 def run_scirun_model(samples,N):
 
     # convert samples into transformation matrices, save to disk, load in SCIRun, run model, save solutions to disk, load back to script.
-    scirun_call = "/Users/jess/software/SCIRun/bin_clean/SCIRun/SCIRun_test"
-#    scirun_call = "/Applications/SCIRun.app/Contents/MacOS/SCIRun"
     network_file = output_dir+"nets/torso_position_model_all.srn5"
-    tmp_dir = output_dir+"UQ/tmp/"
     
     
 
     # experiment files.  It is here for now to make some things easier
     vect_file = output_dir+"data/geom/s_vect.mat"
-    heart_pots = output_dir+"Run0001-cappedsock.mat"
+    heart_pots = output_dir+"data/potentials/Run0001-cappedsock.mat"
     heart_geom = output_dir+"data/geom/capped_sock.mat"
     torso_geom = output_dir+"data/geom/Full_tank_771.mat"
     
@@ -65,8 +63,8 @@ def run_scirun_model(samples,N):
     SR_output_file = os.path.join(tmp_dir, "UQ_torso_SR_solutions.txt")
     samples_file = os.path.join(tmp_dir, "UQ_torso_samples.mat")
     
-    
-    trans_samples = make_transforms(samples, vect_file)
+    # temporary fix for bug in domain code
+    trans_samples = make_transforms(samples*35, vect_file)
     scipy.io.savemat(samples_file, dict(samples=trans_samples))
     
     s_file=open(script_file_tmp,'w+')
@@ -79,8 +77,11 @@ def run_scirun_model(samples,N):
     s_file.write("scirun_set_module_state('WriteMatrix:1','Filename','n_comp.txt')\n")
     s_file.write("scirun_set_module_state('WriteMatrix:0','Filename','"+SR_output_file+"')\n")
     s_file.write("scirun_set_module_state('WriteMatrix:0','FileTypeName','SimpleTextFile (*.*)')\n")
+    s_file.write("scirun_set_module_state('GetMatrixSlice:0','SliceIndex',0)\n")
+    s_file.write("scirun_set_module_transient_state('GetMatrixSlice:0','PlayModeActive',1)\n")
     
-#    s_file.write("scirun_execute_all()\n")
+    s_file.write("scirun_execute_all()\n")
+#    s_file.write("scirun_force_quit()\n")
     s_file.close()
     
 #    print( scirun_call+" -0 -S "+script_file_tmp)
@@ -174,11 +175,14 @@ quantiles = pce.quantile(quantile_levels, M=int(2e3))
 
 median = median = pce.quantile(0.5, M=int(1e3))
 
-median = median.reshape((771,383))
-quantiles = quantiles.reshape((quantiles.shape[0],771,383))
+num_time_steps = 383
+num_leads = 771
+
+median = median.reshape((num_leads,num_time_steps))
+quantiles = quantiles.reshape((quantiles.shape[0],num_leads,num_time_steps))
 
 mo_shape = model_output.shape
-pots = model_output(reshape,(mo_shape[0],771,383))
+pots = model_output.reshape((mo_shape[0],num_leads,num_time_steps))
 
 
 UQ_file = os.path.join(output_dir+"UQ_data", "torso_position_UQ_values.mat")
@@ -192,16 +196,18 @@ lead_num = 404
 print(model_output.shape)
 plt.figure()
 
-#plt.plot(model_output[:V, :].T, 'k', alpha=0.8, linewidth=0.2)
-plt.plot(model_output[0:383,lead_num],median[lead_num,:], 'b', label='PCE median')
+plt.plot(np.array(range(num_time_steps)),pots[:,lead_num,:].T, 'k', alpha=0.8, linewidth=0.2)
+plt.plot(np.array(range(num_time_steps)),median[lead_num,:], 'b', label='PCE median')
 
 band_mass = 1/(2*(Q+1))
 
 for ind in range(Q):
     alpha = (Q-ind) * 1/Q - (1/(2*Q))
     if ind == 0:
-        plt.fill_between(np.array(range(383)),quantiles[ind,lead_num, :], quantiles[Q+ind,lead_num, :],
+        plt.fill_between(np.array(range(num_time_steps)),quantiles[ind,lead_num, :], quantiles[Q+ind,lead_num, :],
                          interpolate=True, facecolor='red', alpha=alpha,
                          label='{0:1.2f} probability mass (each band)'.format(band_mass))
     else:
-        plt.fill_between(np.array(range(383)),quantiles[ind,lead_num, :], quantiles[Q+ind,lead_num, :], interpolate=True, facecolor='red', alpha=alpha)
+        plt.fill_between(np.array(range(num_time_steps)),quantiles[ind,lead_num, :], quantiles[Q+ind,lead_num, :], interpolate=True, facecolor='red', alpha=alpha)
+        
+plt.show()
